@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Smart Task Manager</title>
+    <meta
+      name="description"
+      content="A beautifully designed Smart Task Manager to organize your day, track progress, and stay productive."
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,300;0,14..32,400;0,14..32,500;0,14..32,600;0,14..32,700;0,14..32,800;0,14..32,900&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+
+    <!-- Decorative mesh gradient canvas -->
+    <div class="mesh-bg">
+      <div class="mesh-orb orb-a"></div>
+      <div class="mesh-orb orb-b"></div>
+      <div class="mesh-orb orb-c"></div>
+    </div>
+
+    <div class="layout">
+
+      <!-- ══ LEFT PANEL — Sidebar ══ -->
+      <aside class="sidebar">
+
+        <!-- Brand -->
+        <div class="brand">
+          <div class="brand-logo" aria-hidden="true">
+            <svg viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <rect width="36" height="36" rx="10" fill="url(#lg1)"/>
+              <path d="M10 18l6 6 10-12" stroke="#fff" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/>
+              <defs>
+                <linearGradient id="lg1" x1="0" y1="0" x2="36" y2="36" gradientUnits="userSpaceOnUse">
+                  <stop stop-color="#818cf8"/>
+                  <stop offset="1" stop-color="#4f46e5"/>
+                </linearGradient>
+              </defs>
+            </svg>
+          </div>
+          <div class="brand-text">
+            <span class="brand-name">TaskFlow</span>
+            <span class="brand-tagline">Stay productive</span>
+          </div>
+        </div>
+
+        <!-- Stats Cards -->
+        <div class="stats-grid">
+          <div class="stat-card card-total" id="stat-total">
+            <div class="stat-icon">📋</div>
+            <div class="stat-info">
+              <span class="stat-value" id="total-count">0</span>
+              <span class="stat-label">Total Tasks</span>
+            </div>
+          </div>
+          <div class="stat-card card-pending" id="stat-pending">
+            <div class="stat-icon">⏳</div>
+            <div class="stat-info">
+              <span class="stat-value" id="pending-count">0</span>
+              <span class="stat-label">Pending</span>
+            </div>
+          </div>
+          <div class="stat-card card-done" id="stat-completed">
+            <div class="stat-icon">✅</div>
+            <div class="stat-info">
+              <span class="stat-value" id="completed-count">0</span>
+              <span class="stat-label">Completed</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Progress Ring -->
+        <div class="ring-wrap">
+          <div class="ring-container">
+            <svg class="ring-svg" viewBox="0 0 120 120">
+              <defs>
+                <linearGradient id="ringGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%"   stop-color="#34d399"/>
+                  <stop offset="100%" stop-color="#10b981"/>
+                </linearGradient>
+              </defs>
+              <circle class="ring-track" cx="60" cy="60" r="50"/>
+              <circle class="ring-fill" id="ring-fill" cx="60" cy="60" r="50"
+                stroke="url(#ringGradient)"
+                stroke-dasharray="314.159"
+                stroke-dashoffset="314.159"/>
+            </svg>
+            <div class="ring-center">
+              <span class="ring-pct" id="progress-label">0%</span>
+              <span class="ring-sub">complete</span>
+            </div>
+          </div>
+          <!-- Hidden progress bar fill for JS compatibility -->
+          <div style="display:none">
+            <div class="progress-bar-bg">
+              <div class="progress-bar-fill" id="progress-fill"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Filter Navigation -->
+        <nav class="side-nav" aria-label="Task filters">
+          <p class="nav-label">View</p>
+          <div class="filter-tabs" role="tablist">
+            <button class="filter-tab active" id="tab-all" role="tab" data-filter="all" aria-selected="true">
+              <span class="tab-icon">🗂️</span> All Tasks
+            </button>
+            <button class="filter-tab" id="tab-pending" role="tab" data-filter="pending" aria-selected="false">
+              <span class="tab-icon">🔆</span> Pending
+            </button>
+            <button class="filter-tab" id="tab-completed" role="tab" data-filter="completed" aria-selected="false">
+              <span class="tab-icon">🏆</span> Completed
+            </button>
+          </div>
+        </nav>
+
+        <!-- Danger Zone -->
+        <div class="sidebar-footer">
+          <button class="delete-all-btn" id="delete-all-btn" aria-label="Delete all tasks">
+            🗑️ Delete All
+          </button>
+        </div>
+
+      </aside>
+
+      <!-- ══ RIGHT PANEL — Main Content ══ -->
+      <main class="main-panel">
+
+        <!-- Top Bar -->
+        <header class="topbar">
+          <div class="topbar-greeting">
+            <h1 class="topbar-title">My Tasks</h1>
+            <p class="topbar-date" id="topbar-date"></p>
+          </div>
+          <div class="topbar-badge">
+            <span id="total-count-top">0</span> tasks total
+          </div>
+        </header>
+
+        <!-- Add Task Card -->
+        <section class="add-card" aria-label="Add new task">
+          <div class="add-card-header">
+            <div class="add-card-dot"></div>
+            <span class="add-card-title">New Task</span>
+          </div>
+          <div class="input-row">
+            <div class="input-wrap">
+              <span class="input-prefix-icon" aria-hidden="true">✎</span>
+              <input
+                type="text"
+                id="task-input"
+                class="task-input"
+                placeholder="What needs to be done today?"
+                maxlength="120"
+                autocomplete="off"
+                aria-label="New task description"
+              />
+            </div>
+            <button id="add-btn" class="add-btn" aria-label="Add task">
+              <span class="btn-plus" aria-hidden="true">+</span>
+              <span class="btn-text">Add Task</span>
+            </button>
+          </div>
+          <div class="input-meta">
+            <span class="char-counter" id="char-counter">0 / 120</span>
+            <span class="input-hint">Press Enter to add quickly</span>
+          </div>
+        </section>
+
+        <!-- Tasks Board -->
+        <div class="board" id="tasks-container">
+
+          <!-- Pending Column -->
+          <section class="board-col" id="pending-section" aria-label="Pending tasks">
+            <div class="col-header col-header-pending">
+              <div class="col-dot dot-amber"></div>
+              <h2 class="col-title">Pending</h2>
+              <span class="col-badge badge-amber" id="pending-badge">0</span>
+            </div>
+            <ul class="task-list" id="pending-list" role="list"></ul>
+            <div class="empty-state" id="pending-empty">
+              <div class="empty-art">🎯</div>
+              <p class="empty-msg">All caught up!</p>
+              <p class="empty-sub">Add a task to get started.</p>
+            </div>
+          </section>
+
+          <!-- Completed Column -->
+          <section class="board-col" id="completed-section" aria-label="Completed tasks">
+            <div class="col-header col-header-done">
+              <div class="col-dot dot-green"></div>
+              <h2 class="col-title">Completed</h2>
+              <span class="col-badge badge-green" id="completed-badge">0</span>
+              <button class="clear-btn" id="clear-completed-btn" aria-label="Clear all completed tasks">
+                Clear all
+              </button>
+            </div>
+            <ul class="task-list" id="completed-list" role="list"></ul>
+            <div class="empty-state" id="completed-empty">
+              <div class="empty-art">⭐</div>
+              <p class="empty-msg">Nothing here yet</p>
+              <p class="empty-sub">Completed tasks appear here.</p>
+            </div>
+          </section>
+
+        </div>
+
+      </main>
+    </div>
+
+    <!-- Toast -->
+    <div class="toast" id="toast" role="alert" aria-live="polite"></div>
+
+    <script src="script.js"></script>
+
+
+
+  </body>
+</html>
